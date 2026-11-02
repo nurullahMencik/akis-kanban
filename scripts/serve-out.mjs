@@ -4,6 +4,7 @@ import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
+import { createGzip } from "node:zlib";
 
 const BASE_PATH = "/akis-kanban";
 const ROOT = resolve(process.argv[2] ?? "out");
@@ -36,13 +37,20 @@ async function resolveFile(pathname) {
   return null;
 }
 
-function send(response, status, file) {
+const COMPRESSIBLE = new Set([".html", ".js", ".css", ".json", ".txt", ".svg", ".webmanifest"]);
+
+// Like GitHub Pages, text assets are served gzip-compressed when the client accepts it.
+function send(request, response, status, file) {
   const immutable = file.includes(`${join("_next", "static")}`);
+  const gzip = COMPRESSIBLE.has(extname(file)) && /\bgzip\b/.test(request.headers["accept-encoding"] ?? "");
   response.writeHead(status, {
     "Content-Type": TYPES[extname(file)] ?? "application/octet-stream",
     "Cache-Control": immutable ? "public, max-age=31536000, immutable" : "no-cache",
+    ...(gzip ? { "Content-Encoding": "gzip", Vary: "Accept-Encoding" } : {}),
   });
-  createReadStream(file).pipe(response);
+  const stream = createReadStream(file);
+  if (gzip) stream.pipe(createGzip()).pipe(response);
+  else stream.pipe(response);
 }
 
 const server = createServer(async (request, response) => {
@@ -57,9 +65,9 @@ const server = createServer(async (request, response) => {
     return;
   }
   const file = await resolveFile(url.pathname.slice(BASE_PATH.length));
-  if (file) return send(response, 200, file);
+  if (file) return send(request, response, 200, file);
   const notFound = await resolveFile("/404.html");
-  if (notFound) return send(response, 404, notFound);
+  if (notFound) return send(request, response, 404, notFound);
   response.writeHead(404).end("Not found");
 });
 

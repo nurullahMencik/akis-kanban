@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
 import { AlarmClock, CalendarDays, CheckSquare } from "lucide-react";
-import { memo, useId, type KeyboardEvent } from "react";
+import { memo, type KeyboardEvent } from "react";
 import { AvatarStack } from "@/components/ui/avatar";
 import { LabelChip } from "@/components/ui/label-chip";
 import { PriorityIcon } from "@/components/ui/priority-icon";
@@ -20,12 +20,12 @@ interface CardFaceProps {
   members: Record<ID, Member>;
   now: number;
   done: boolean;
-  titleId?: string;
-  metaId?: string;
+  /** Adds a screen reader summary of the icon-only metadata (the tile's name is its text content). */
+  withSummary?: boolean;
 }
 
 /** Presentational card body, shared by the sortable tile and the drag overlay. */
-export function CardFace({ card, boardKey, labels, members, now, done, titleId, metaId }: CardFaceProps) {
+export function CardFace({ card, boardKey, labels, members, now, done, withSummary }: CardFaceProps) {
   const { t, dateLocale } = useI18n();
   const cardLabels = card.labelIds.map((id) => labels[id]).filter((label) => label !== undefined);
   const assignees = card.assigneeIds.map((id) => members[id]).filter((member) => member !== undefined);
@@ -53,7 +53,7 @@ export function CardFace({ card, boardKey, labels, members, now, done, titleId, 
         <span className="font-mono text-[0.6875rem] font-medium tracking-tight text-ink-3">{cardKey(boardKey, card.number)}</span>
         <PriorityIcon priority={card.priority} className="size-3.5" />
       </div>
-      <p id={titleId} className={`text-[0.8125rem] font-semibold leading-snug ${done ? "text-ink-2" : "text-ink"}`}>
+      <p className={`text-[0.8125rem] font-semibold leading-snug ${done ? "text-ink-2" : "text-ink"}`}>
         {card.title}
       </p>
       {cardLabels.length ? (
@@ -95,8 +95,8 @@ export function CardFace({ card, boardKey, labels, members, now, done, titleId, 
           </span>
         </div>
       ) : null}
-      {metaId ? (
-        <span id={metaId} className="sr-only">
+      {withSummary ? (
+        <span className="sr-only">
           {meta}
         </span>
       ) : null}
@@ -104,15 +104,13 @@ export function CardFace({ card, boardKey, labels, members, now, done, titleId, 
   );
 }
 
-interface CardTileProps extends Omit<CardFaceProps, "titleId" | "metaId"> {
+interface CardTileProps extends Omit<CardFaceProps, "withSummary"> {
   columnId: ID;
   onOpen: (cardId: ID) => void;
 }
 
 export const CardTile = memo(function CardTile({ columnId, onOpen, ...face }: CardTileProps) {
   const { card } = face;
-  const titleId = useId();
-  const metaId = useId();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
     data: { type: "card", columnId },
@@ -134,8 +132,7 @@ export const CardTile = memo(function CardTile({ columnId, onOpen, ...face }: Ca
       {...listeners}
       onKeyDown={onKeyDown}
       onClick={() => onOpen(card.id)}
-      aria-labelledby={titleId}
-      aria-describedby={`${metaId} ${attributes["aria-describedby"]}`}
+      aria-describedby={attributes["aria-describedby"]}
       data-testid="card"
       data-card-id={card.id}
       style={{ transform: CSS.Translate.toString(transform), transition }}
@@ -143,7 +140,7 @@ export const CardTile = memo(function CardTile({ columnId, onOpen, ...face }: Ca
         isDragging ? "opacity-35" : ""
       }`}
     >
-      <CardFace {...face} titleId={titleId} metaId={metaId} />
+      <CardFace {...face} withSummary />
     </div>
   );
 });

@@ -233,24 +233,27 @@ function timeline(rng: Rng, spec: CardSpec, now: number, boardStart: number, com
 }
 
 /**
- * Moves events into working hours on weekdays, keeps them strictly ordered
- * and never later than `now`.
+ * Moves events into working hours on weekdays while preserving the gaps between a
+ * card's events (so cycle times keep their sampled length), keeps them strictly
+ * ordered and never later than `now`.
  */
 function normalise(steps: Transition[], now: number): Transition[] {
+  let carry = 0;
   const result = steps.map((step) => {
-    const shifted = toWorkingTime(step.at);
-    // Shifting forward must not push recent events into the future.
-    return { ...step, at: shifted > now - 30 * MINUTE ? step.at : shifted };
+    const base = step.at + carry;
+    const shifted = toWorkingTime(base);
+    carry += shifted - base;
+    return { ...step, at: shifted };
   });
   for (let i = 1; i < result.length; i++) {
     const previous = result[i - 1]!;
     const current = result[i]!;
     if (current.at <= previous.at + 20 * MINUTE) current.at = previous.at + 20 * MINUTE;
   }
-  for (let i = result.length - 1; i >= 0; i--) {
-    const limit = i === result.length - 1 ? now - 10 * MINUTE : result[i + 1]!.at - 15 * MINUTE;
-    if (result[i]!.at > limit) result[i]!.at = limit;
-  }
+  // If the chain ran past `now`, move the whole chain back instead of squashing it.
+  const last = result[result.length - 1];
+  const overshoot = last ? last.at - (now - 10 * MINUTE) : 0;
+  if (overshoot > 0) for (const step of result) step.at -= overshoot;
   return result;
 }
 

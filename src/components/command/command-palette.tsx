@@ -25,8 +25,16 @@ import { useUi } from "@/lib/store/ui-store";
 import { cardKey, normalizeText } from "@/lib/text";
 import { buildHref, useActiveBoard, useAppParams, useBoards } from "@/lib/use-app-params";
 
-const filter = (value: string, search: string, keywords?: string[]) =>
-  defaultFilter(normalizeText(value), normalizeText(search), keywords?.map(normalizeText));
+/**
+ * Every search term must appear (case and Turkish-diacritic insensitive) in the item's
+ * value or keywords; cmdk's fuzzy score is then only used for ranking.
+ */
+const filter = (value: string, search: string, keywords?: string[]) => {
+  const haystack = normalizeText([value, ...(keywords ?? [])].join(" "));
+  const terms = normalizeText(search).split(/\s+/).filter(Boolean);
+  if (!terms.every((term) => haystack.includes(term))) return 0;
+  return Math.max(defaultFilter(normalizeText(value), normalizeText(search), keywords?.map(normalizeText)), 0.01);
+};
 
 function Item({
   value,
@@ -216,8 +224,7 @@ export default function CommandPalette() {
               {cards.map(({ card, board: owner, key }) => (
                 <Item
                   key={card.id}
-                  value={`card-${card.id}`}
-                  keywords={[key, card.title, owner.name]}
+                  value={`${key} ${card.title}`}
                   icon={<FileText className="size-4" />}
                   onSelect={run(() => openCard(card.id, owner.id))}
                   hint={data.columns[card.columnId]?.name}

@@ -52,12 +52,19 @@ test("renders the analytics charts from move events", async ({ page }) => {
   await expect(page.getByTestId("kpi-wip-value")).toHaveText("9");
   await expect(page.getByTestId("kpi-overdue-value")).toHaveText("3");
 
+  // Charts mount as they scroll into view.
   const cfd = page.getByTestId("chart-cfd");
   await expect(cfd.locator(".recharts-area")).toHaveCount(5);
-  await expect(page.getByTestId("chart-cycle").locator(".recharts-scatter-symbol")).toHaveCount(22);
-  await expect(page.getByTestId("chart-cycle").locator(".recharts-reference-line")).toHaveCount(3);
-  await expect(page.getByTestId("chart-throughput").locator(".recharts-bar-rectangle")).toHaveCount(6);
-  await expect(page.getByTestId("chart-burndown").locator(".recharts-line")).toHaveCount(2);
+  const cycle = page.getByTestId("chart-cycle");
+  await cycle.scrollIntoViewIfNeeded();
+  await expect(cycle.locator(".recharts-scatter-symbol")).toHaveCount(22);
+  await expect(cycle.locator(".recharts-reference-line")).toHaveCount(3);
+  const throughput = page.getByTestId("chart-throughput");
+  await throughput.scrollIntoViewIfNeeded();
+  await expect(throughput.locator(".recharts-bar-rectangle")).toHaveCount(6);
+  const burndown = page.getByTestId("chart-burndown");
+  await burndown.scrollIntoViewIfNeeded();
+  await expect(burndown.locator(".recharts-line")).toHaveCount(2);
 
   // Every chart also exposes its numbers as a table.
   await cfd.getByText("Veri tablosu").click();

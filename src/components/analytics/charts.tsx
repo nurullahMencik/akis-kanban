@@ -1,7 +1,7 @@
 "use client";
 
 import { format, startOfDay } from "date-fns";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Area,
   AreaChart,
@@ -53,6 +53,38 @@ function useFormatters() {
   };
 }
 
+/**
+ * Mounts the (comparatively expensive) Recharts tree only once its slot is near the
+ * viewport. Keeps the analytics page responsive on slow phones; the reserved height
+ * avoids layout shift.
+ */
+function WhenVisible({ height, children }: { height: number; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "120px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} style={{ minHeight: height }}>
+      {visible ? children : null}
+    </div>
+  );
+}
+
 function ChartCard({
   title,
   description,
@@ -60,6 +92,7 @@ function ChartCard({
   table,
   className,
   testId,
+  height = HEIGHT,
   children,
 }: {
   title: string;
@@ -68,6 +101,7 @@ function ChartCard({
   table: ReactNode;
   className?: string;
   testId: string;
+  height?: number;
   children: ReactNode;
 }) {
   const { t } = useI18n();
@@ -79,7 +113,7 @@ function ChartCard({
       </figcaption>
       {legend ? <div className="mt-3">{legend}</div> : null}
       <div className="mt-3 min-w-0" data-chart>
-        {children}
+        <WhenVisible height={height}>{children}</WhenVisible>
       </div>
       <details className="mt-2 text-xs">
         <summary className="w-fit rounded py-1 font-semibold text-ink-2 hover:text-ink">{t("chart.table")}</summary>
@@ -194,6 +228,7 @@ function CumulativeFlow({ metrics }: { metrics: BoardMetrics }) {
     <ChartCard
       testId="chart-cfd"
       className="lg:col-span-2"
+      height={HEIGHT + 40}
       title={f.t("chart.cfd")}
       description={f.t("chart.cfdDesc")}
       legend={
