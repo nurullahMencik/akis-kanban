@@ -105,6 +105,7 @@ function ChartCard({
   children: ReactNode;
 }) {
   const { t } = useI18n();
+  const [tableOpen, setTableOpen] = useState(false);
   return (
     <figure className={`flex min-w-0 flex-col rounded-2xl border border-line bg-surface p-4 sm:p-5 ${className ?? ""}`} data-testid={testId}>
       <figcaption className="flex flex-col gap-1">
@@ -115,9 +116,10 @@ function ChartCard({
       <div className="mt-3 min-w-0" data-chart>
         <WhenVisible height={height}>{children}</WhenVisible>
       </div>
-      <details className="mt-2 text-xs">
+      <details className="mt-2 text-xs" onToggle={(event) => setTableOpen(event.currentTarget.open)}>
         <summary className="w-fit rounded py-1 font-semibold text-ink-2 hover:text-ink">{t("chart.table")}</summary>
-        <div className="scroll-thin mt-2 max-h-64 overflow-auto rounded-lg border border-line">{table}</div>
+        {/* Rendered on demand: the rows are only needed once the reader opens the table. */}
+        {tableOpen ? <div className="scroll-thin mt-2 max-h-64 overflow-auto rounded-lg border border-line">{table}</div> : null}
       </details>
     </figure>
   );

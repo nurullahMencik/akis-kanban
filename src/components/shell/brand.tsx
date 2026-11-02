@@ -14,7 +14,7 @@ export function Brand({ tagline }: { tagline?: string }) {
     <span className="flex items-center gap-2.5">
       <BrandMark />
       <span className="flex flex-col leading-none">
-        <span className="text-[1.0625rem] font-bold tracking-tight text-ink">Akış</span>
+        <span className="text-[1.0625rem] font-bold text-ink">Akış</span>
         {tagline ? <span className="mt-1 text-[0.6875rem] font-medium text-ink-3">{tagline}</span> : null}
       </span>
     </span>

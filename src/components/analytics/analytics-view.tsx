@@ -45,7 +45,7 @@ function KpiTile({
           {icon}
         </span>
       </div>
-      <p className="text-[1.75rem] font-semibold leading-none tracking-tight text-ink" data-testid={`${testId}-value`}>
+      <p className="text-[1.75rem] font-semibold leading-none tracking-[-0.01em] text-ink" data-testid={`${testId}-value`}>
         {value}
       </p>
       <p
@@ -76,7 +76,7 @@ export function AnalyticsView() {
       <div className="mx-auto flex max-w-[90rem] flex-col gap-5 px-4 py-5 lg:px-6">
         <header className="flex flex-col gap-1">
           <p className="text-[0.8125rem] font-semibold text-accent-ink">{board?.name ?? " "}</p>
-          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{t("analytics.title")}</h1>
+          <h1 className="text-xl font-bold tracking-[-0.01em] sm:text-2xl">{t("analytics.title")}</h1>
           <p className="text-sm text-ink-2">{t("analytics.subtitle")}</p>
         </header>
 

@@ -8,7 +8,7 @@ export function Avatar({ member, size = "sm", ring = false }: { member: Member; 
   return (
     <span
       title={member.name}
-      className={`inline-flex shrink-0 select-none items-center justify-center rounded-full font-bold tracking-tight ${SIZES[size]} ${
+      className={`inline-flex shrink-0 select-none items-center justify-center rounded-full font-bold ${SIZES[size]} ${
         ring ? "ring-2 ring-surface" : ""
       } bg-[hsl(var(--h)_48%_86%)] text-[hsl(var(--h)_62%_24%)] dark:bg-[hsl(var(--h)_32%_30%)] dark:text-[hsl(var(--h)_70%_88%)]`}
       style={{ "--h": member.hue } as CSSProperties}

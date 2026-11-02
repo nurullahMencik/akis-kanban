@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Hanken_Grotesk } from "next/font/google";
 import { Suspense } from "react";
 import { AppShell } from "@/components/shell/app-shell";
 import { ShellSkeleton } from "@/components/shell/shell-skeleton";
@@ -7,7 +7,9 @@ import { tr } from "@/lib/i18n/messages";
 import { PREFERENCES_BOOT_SCRIPT } from "@/lib/preferences-boot";
 import "./globals.css";
 
-const uiFont = Instrument_Sans({
+// Hanken Grotesk: a normal-width space (0.26em) keeps small UI text readable;
+// latin-ext covers Turkish (ğ, ş, İ …).
+const uiFont = Hanken_Grotesk({
   subsets: ["latin", "latin-ext"],
   variable: "--font-ui",
   display: "swap",

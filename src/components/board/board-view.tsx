@@ -65,7 +65,7 @@ function BoardHeader({ board, filters, now }: { board: Board; filters: ReturnTyp
     <header className="flex flex-col gap-3 border-b border-line px-4 pt-4 pb-3 lg:px-5">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="flex min-w-0 items-center gap-2">
-          <h1 className="truncate text-lg font-bold tracking-tight text-ink sm:text-xl" data-testid="board-title">
+          <h1 className="truncate text-lg font-bold tracking-[-0.01em] text-ink sm:text-xl" data-testid="board-title">
             {board.name}
           </h1>
           <BoardMenu board={board} />
@@ -79,8 +79,7 @@ function BoardHeader({ board, filters, now }: { board: Board; filters: ReturnTyp
             })}
             {daysLeft !== null ? (
               <span className="font-semibold text-ink">
-                ·{" "}
-                {daysLeft > 0 ? t("board.sprintLeft", { count: daysLeft }) : daysLeft === 0 ? t("board.sprintLastDay") : t("board.sprintEnded")}
+                {`· ${daysLeft > 0 ? t("board.sprintLeft", { count: daysLeft }) : daysLeft === 0 ? t("board.sprintLastDay") : t("board.sprintEnded")}`}
               </span>
             ) : null}
           </span>

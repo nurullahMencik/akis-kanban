@@ -147,8 +147,10 @@ npm run screenshots  # docs/screenshots altındaki görselleri yeniden üretir
 
   | Sayfa | Performance | Accessibility | Best Practices | SEO |
   | --- | --- | --- | --- | --- |
-  | Pano | 91 | 100 | 100 | 100 |
+  | Pano | 90 | 100 | 100 | 100 |
   | Analitik | 89 | 100 | 100 | 100 |
+
+  Ölçümler makine boştayken alındı (Lighthouse benchmarkIndex ≈ 3200–3500). Makine yüklüyken simüle edilen TBT büyür ve Performance puanı düşer; diğer kategoriler değişmez.
 
 ## Bilinen sınırlamalar
 - Veri tarayıcıya özeldir. Cihazlar ve sekmeler arasında senkronizasyon yoktur (iki sekmede aynı anda düzenleme yapılırsa son yazan kazanır).
@@ -168,5 +170,5 @@ npm run screenshots  # docs/screenshots altındaki görselleri yeniden üretir
 - **Productivity:** a cmdk command palette, keyboard shortcuts (`n`, `/`, `?`), undo/redo for every change, and filters synced to the URL.
 - **Analytics:** a cumulative flow diagram, a cycle time scatter plot with 50/85/95th percentile lines, weekly throughput, a sprint burndown and KPI tiles. Everything is derived from timestamped card move events by pure, unit-tested functions.
 - **How it works:** every mutation goes through immer's `produceWithPatches`. The same patches power undo/redo and incremental IndexedDB writes (only the touched rows are written).
-- **Quality:** ESLint with 0 warnings, strict typecheck, 36 Vitest tests and 12 Playwright tests against the production build. Lighthouse mobile: Performance 91 / 89 (board / analytics), and 100 for Accessibility, Best Practices and SEO.
+- **Quality:** ESLint with 0 warnings, strict typecheck, 36 Vitest tests and 12 Playwright tests against the production build. Lighthouse mobile: Performance 90 / 89 (board / analytics), and 100 for Accessibility, Best Practices and SEO.
 - Turkish UI by default with an English toggle, plus light, dark and system themes. Licensed under MIT.

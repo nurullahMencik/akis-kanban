@@ -50,7 +50,7 @@ export function CardFace({ card, boardKey, labels, members, now, done, withSumma
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-[0.6875rem] font-medium tracking-tight text-ink-3">{cardKey(boardKey, card.number)}</span>
+        <span className="font-mono text-[0.6875rem] font-medium text-ink-3">{cardKey(boardKey, card.number)}</span>
         <PriorityIcon priority={card.priority} className="size-3.5" />
       </div>
       <p className={`text-[0.8125rem] font-semibold leading-snug ${done ? "text-ink-2" : "text-ink"}`}>
