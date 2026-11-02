@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   reactStrictMode: true,
+  // Do not write an AGENTS.md into the repository on `next dev`.
+  agentRules: false,
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },

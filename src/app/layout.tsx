@@ -3,6 +3,7 @@ import { Instrument_Sans } from "next/font/google";
 import { Suspense } from "react";
 import { AppShell } from "@/components/shell/app-shell";
 import { ShellSkeleton } from "@/components/shell/shell-skeleton";
+import { tr } from "@/lib/i18n/messages";
 import { PREFERENCES_BOOT_SCRIPT } from "@/lib/preferences-boot";
 import "./globals.css";
 
@@ -14,7 +15,7 @@ const uiFont = Instrument_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Akış · Analitik odaklı Kanban",
+    default: `${tr["app.name"]} · ${tr["app.tagline"]}`,
     template: "%s · Akış",
   },
   description:
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   applicationName: "Akış",
   authors: [{ name: "Nurullah Mencik" }],
   openGraph: {
-    title: "Akış · Analitik odaklı Kanban",
+    title: `${tr["app.name"]} · ${tr["app.tagline"]}`,
     description: "Local-first Kanban board with flow analytics, built with Next.js and TypeScript.",
     type: "website",
   },

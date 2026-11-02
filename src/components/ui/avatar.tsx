@@ -23,7 +23,7 @@ export function AvatarStack({ members, max = 3, size = "sm" }: { members: Member
   const shown = members.slice(0, max);
   const rest = members.length - shown.length;
   return (
-    <span className="flex -space-x-1" aria-hidden>
+    <span className={`flex ${size === "xs" ? "-space-x-0.5" : "-space-x-1"}`} aria-hidden>
       {shown.map((member) => (
         <Avatar key={member.id} member={member} size={size} ring />
       ))}

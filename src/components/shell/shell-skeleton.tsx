@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/messages";
 import { Brand } from "./brand";
 
 /** Static first paint (prerendered HTML) shown until the client reads IndexedDB. */
@@ -5,7 +6,7 @@ export function ShellSkeleton() {
   return (
     <div className="flex h-dvh overflow-hidden" aria-busy="true">
       <aside className="hidden w-60 shrink-0 flex-col gap-5 border-e border-line px-4.5 py-4 lg:flex">
-        <Brand tagline="Analitik odaklı Kanban" />
+        <Brand tagline={tr["app.tagline"]} />
         <div className="h-9 rounded-lg border border-line bg-surface" />
         <div className="flex flex-col gap-2">
           <div className="h-8 rounded-lg bg-sunken" />

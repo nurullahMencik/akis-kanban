@@ -62,8 +62,47 @@ test.describe("board", () => {
     await expect(drawer).toBeHidden();
     await expect(page).not.toHaveURL(/card=/);
 
+    // Opening pushes a history entry, so the browser back button closes the drawer.
+    await card(page, 27).click();
+    await expect(drawer).toBeVisible();
+    await page.goBack();
+    await expect(drawer).toBeHidden();
+    await expect(page).not.toHaveURL(/card=/);
+
     await page.goto(`./?board=${BOARD}&card=${BOARD}-23`);
     await expect(page.getByTestId("card-drawer").getByTestId("card-title-input")).toHaveValue("FAST ile anlık para transferi akışı");
+  });
+
+  test("moves a card with a touch long-press drag", async ({ browser }) => {
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 800 },
+      hasTouch: true,
+      locale: "tr-TR",
+      timezoneId: "Europe/Istanbul",
+    });
+    const page = await context.newPage();
+    await openBoard(page);
+    const from = await card(page, 38).boundingBox();
+    const target = await column(page, "todo").getByTestId("card").first().boundingBox();
+    if (!from || !target) throw new Error("missing geometry");
+
+    // Raw touch events via CDP: long-press (TouchSensor delay) then drag.
+    const cdp = await context.newCDPSession(page);
+    const touch = (type: "touchStart" | "touchMove" | "touchEnd", x: number, y: number) =>
+      cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x, y }] });
+    const start = { x: from.x + from.width / 2, y: from.y + 24 };
+    await touch("touchStart", start.x, start.y);
+    await page.waitForTimeout(400);
+    const end = { x: target.x + target.width / 2, y: target.y + 20 };
+    for (let step = 1; step <= 15; step++) {
+      await touch("touchMove", start.x + ((end.x - start.x) * step) / 15, start.y + ((end.y - start.y) * step) / 15);
+      await page.waitForTimeout(16);
+    }
+    await touch("touchEnd", end.x, end.y);
+
+    await expect(column(page, "todo").locator(`[data-card-id="${BOARD}-38"]`)).toBeVisible();
+    await expect(column(page, "backlog").locator(`[data-card-id="${BOARD}-38"]`)).toHaveCount(0);
+    await context.close();
   });
 
   test("highlights the exceeded WIP limit", async ({ page }) => {

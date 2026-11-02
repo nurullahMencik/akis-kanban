@@ -1,6 +1,6 @@
 "use client";
 
-import { format, startOfDay } from "date-fns";
+import { format, startOfDay, startOfWeek } from "date-fns";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Area,
@@ -386,7 +386,9 @@ function CycleTime({ metrics, now }: { metrics: BoardMetrics; now: number }) {
 function Throughput({ metrics }: { metrics: BoardMetrics }) {
   const f = useFormatters();
   const weeks = metrics.throughput.map((week) => ({ ...week, label: f.day(week.weekStart) }));
-  const complete = weeks.slice(0, -1);
+  // Average over finished weeks since the board existed (the current week is still running).
+  const firstWeek = startOfWeek(metrics.board.createdAt, { weekStartsOn: 1 }).getTime();
+  const complete = weeks.slice(0, -1).filter((week) => week.weekStart >= firstWeek);
   const average = complete.length ? complete.reduce((sum, week) => sum + week.count, 0) / complete.length : null;
 
   const content = ({ active, payload }: TooltipContentProps) => {
