@@ -268,6 +268,16 @@ export function setColumnCategory(d: KanbanData, columnId: ID, category: ColumnC
   if (column && column.category !== category) column.category = category;
 }
 
+export function updateColumn(
+  d: KanbanData,
+  columnId: ID,
+  patch: { name?: string; wipLimit?: number | null; category?: ColumnCategory },
+): void {
+  if (patch.name !== undefined) renameColumn(d, columnId, patch.name);
+  if (patch.wipLimit !== undefined) setColumnWipLimit(d, columnId, patch.wipLimit);
+  if (patch.category !== undefined) setColumnCategory(d, columnId, patch.category);
+}
+
 export function moveColumn(d: KanbanData, boardId: ID, columnId: ID, toIndex: number): void {
   const board = d.boards[boardId];
   if (!board) return;

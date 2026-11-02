@@ -18,6 +18,7 @@ export type HistoryLabel =
   | "renameColumn"
   | "wipLimit"
   | "columnCategory"
+  | "updateColumn"
   | "moveColumn"
   | "deleteColumn"
   | "createBoard"
@@ -67,6 +68,7 @@ export interface KanbanActions {
   renameColumn(columnId: ID, name: string): void;
   setColumnWipLimit(columnId: ID, limit: number | null): void;
   setColumnCategory(columnId: ID, category: ColumnCategory): void;
+  updateColumn(columnId: ID, patch: { name?: string; wipLimit?: number | null; category?: ColumnCategory }): void;
   moveColumn(boardId: ID, columnId: ID, toIndex: number): void;
   deleteColumn(columnId: ID): boolean;
   createBoard(input: ops.NewBoardInput): ID | null;
@@ -189,6 +191,7 @@ export function createKanbanStore(options: StoreOptions = {}) {
         commit("wipLimit", (d) => ops.setColumnWipLimit(d, columnId, limit)),
       setColumnCategory: (columnId, category) =>
         commit("columnCategory", (d) => ops.setColumnCategory(d, columnId, category)),
+      updateColumn: (columnId, patch) => commit("updateColumn", (d) => ops.updateColumn(d, columnId, patch)),
       moveColumn: (boardId, columnId, toIndex) =>
         commit("moveColumn", (d) => ops.moveColumn(d, boardId, columnId, toIndex)),
       deleteColumn: (columnId) => commit("deleteColumn", (d) => ops.deleteColumn(d, columnId)),
